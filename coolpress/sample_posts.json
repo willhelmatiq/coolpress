@@ -1,0 +1,152 @@
+[
+{
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+        "password": "123",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "user1",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-08T22:26:14.360Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+        "password": "321",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "user2",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-08T22:26:30.066Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "press.category",
+    "pk": 1,
+    "fields": {
+        "label": "mystery",
+        "slug": "something"
+    }
+},
+{
+    "model": "press.category",
+    "pk": 2,
+    "fields": {
+        "label": "fiction",
+        "slug": "something else"
+    }
+},
+{
+    "model": "press.category",
+    "pk": 3,
+    "fields": {
+        "label": "blog",
+        "slug": "borring blog"
+    }
+},
+{
+    "model": "press.cooluser",
+    "pk": 1,
+    "fields": {
+        "user": 1,
+        "gravatar_link": "",
+        "github_profile": "",
+        "gh_repositories": null
+    }
+},
+{
+    "model": "press.cooluser",
+    "pk": 2,
+    "fields": {
+        "user": 2,
+        "gravatar_link": "",
+        "github_profile": "",
+        "gh_repositories": null
+    }
+},
+{
+    "model": "press.post",
+    "pk": 1,
+    "fields": {
+        "title": "new Title",
+        "body": "text... text... text",
+        "image_link": "",
+        "status": "PUBLISHED",
+        "author": 1,
+        "category": 1,
+        "creation_date": "2022-11-08T22:44:58.115Z",
+        "last_update": "2022-11-08T22:44:58.115Z"
+    }
+},
+{
+    "model": "press.post",
+    "pk": 2,
+    "fields": {
+        "title": "Attention!",
+        "body": "text... text... text",
+        "image_link": "",
+        "status": "DRAFT",
+        "author": 1,
+        "category": 2,
+        "creation_date": "2022-11-08T22:46:14.702Z",
+        "last_update": "2022-11-08T22:46:14.702Z"
+    }
+},
+{
+    "model": "press.post",
+    "pk": 3,
+    "fields": {
+        "title": "100 secrets of the ...",
+        "body": "text... text... text",
+        "image_link": "",
+        "status": "DRAFT",
+        "author": 1,
+        "category": 3,
+        "creation_date": "2022-11-08T22:48:24.805Z",
+        "last_update": "2022-11-08T22:48:24.806Z"
+    }
+},
+{
+    "model": "press.post",
+    "pk": 4,
+    "fields": {
+        "title": "some Title",
+        "body": "text... text... text",
+        "image_link": "",
+        "status": "PUBLISHED",
+        "author": 2,
+        "category": 1,
+        "creation_date": "2022-11-08T22:53:53.059Z",
+        "last_update": "2022-11-08T22:53:53.059Z"
+    }
+},
+{
+    "model": "press.post",
+    "pk": 5,
+    "fields": {
+        "title": "Dialogs about fishing",
+        "body": "text... text...very big fish... text",
+        "image_link": "",
+        "status": "PUBLISHED",
+        "author": 2,
+        "category": 3,
+        "creation_date": "2022-11-08T22:55:13.629Z",
+        "last_update": "2022-11-08T22:55:13.629Z"
+    }
+}
+]
