@@ -105,7 +105,6 @@ def post_create(request):
                                    author=request.user.cooluser)
             post.save()
             return redirect('/posts')
-            # return HttpResponseRedirect(reverse('posts-list'))
     return render(request, 'post_create.html', {'form': form})
 
 @login_required
@@ -120,7 +119,6 @@ def category_create(request):
                                    created_by=request.user.cooluser)
             category.save()
             return redirect('/posts')
-            # return HttpResponseRedirect(reverse('posts-list'))
     return render(request, 'post_create.html', {'form': form})
 class AboutView(TemplateView):
     template_name = "about.html"
