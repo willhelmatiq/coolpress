@@ -119,7 +119,7 @@ def category_create(request):
                                    created_by=request.user.cooluser)
             category.save()
             return redirect('/posts')
-    return render(request, 'post_create.html', {'form': form})
+    return render(request, 'category_create.html', {'form': form})
 class AboutView(TemplateView):
     template_name = "about.html"
 
