@@ -1,9 +1,14 @@
 import datetime
 
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponse
-from django.shortcuts import render
-from press.models import Category, Post, CoolUser
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from django.views.generic import TemplateView, ListView
+
+from press.forms import PostForm, CommentForm, CategoryForm
+from press.models import Category, Post, CoolUser, Comment, PostStatus
 
 
 def home(request):
@@ -41,4 +46,90 @@ def posts_list(request):
 
 def post_detail(request, post_id):
     post = Post.objects.get(id=post_id)
-    return render(request, 'posts_detail.html', {'post_obj': post})
+    data = request.POST or {'votes': 10}
+    form = CommentForm(data)
+
+    comments = post.comment_set.order_by('-creation_date')
+    return render(request, 'posts_detail.html', {'post_obj': post, 'comment_form': form, 'comments': comments})
+
+
+@login_required
+def add_post_comment(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    data = request.POST or {'votes': 10}
+    form = CommentForm(data)
+    print(request)
+    if request.method == 'POST':
+        if form.is_valid():
+            votes = form.cleaned_data.get('votes')
+            body = form.cleaned_data['body']
+            Comment.objects.create(votes=votes, body=body, post=post, author=request.user.cooluser)
+            return HttpResponseRedirect(reverse('posts-detail', kwargs={'post_id': post_id}))
+
+    return render(request, 'comment-add.html', {'form': form, 'post': post})
+
+
+@login_required
+def post_update(request, post_id=None):
+    post = None
+    if post_id:
+        post = get_object_or_404(Post, pk=post_id)
+        if request.user != post.author.user:
+            return HttpResponseBadRequest('Not allowed to change others posts')
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            username = request.user.username
+            instance.author = CoolUser.objects.get(user__username=username)
+            instance.save()
+            return HttpResponseRedirect(reverse('posts-detail', kwargs={'post_id': instance.id}))
+    else:
+        form = PostForm(instance=post)
+
+    return render(request, 'post_update.html', {'form': form})
+
+@login_required
+def post_create(request):
+    form = PostForm()
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data.get('title')
+            body = form.cleaned_data['body']
+            image_link = form.cleaned_data.get('image_link')
+            category = form.cleaned_data.get('category')
+            status = form.cleaned_data.get('status')
+            post = Post.objects.create(title=title, body=body, image_link=image_link, category=category, status=status,
+                                   author=request.user.cooluser)
+            post.save()
+            return redirect('/posts')
+            # return HttpResponseRedirect(reverse('posts-list'))
+    return render(request, 'post_create.html', {'form': form})
+
+@login_required
+def category_create(request):
+    form = CategoryForm
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            label = form.cleaned_data.get('label')
+            slug = form.cleaned_data['slug']
+            category = Category.objects.create(label=label, slug=slug,
+                                   created_by=request.user.cooluser)
+            category.save()
+            return redirect('/posts')
+            # return HttpResponseRedirect(reverse('posts-list'))
+    return render(request, 'post_create.html', {'form': form})
+class AboutView(TemplateView):
+    template_name = "about.html"
+
+class CategoryListView(ListView):
+    model=Category
+
+class PostClassBasedListView(ListView):
+    limit = 20
+    queryset = Post.objects.filter(status=PostStatus.PUBLISHED)
+    context_object_name = 'post_list'
+    template_name = 'posts_list.html'
