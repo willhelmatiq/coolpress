@@ -19,7 +19,7 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     {% for category in categories %}
-                        <a class="dropdown-item" href="#">{{ category.label }}</a>
+                        <a class="dropdown-item" href="{% url 'post-list-filtered-by-category' category.slug %}">{{ category.label }}</a>
                     {% endfor %}
                 </div>
             </li>
@@ -35,8 +35,8 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navUser">
                         <a class="btn btn-danger" href="{% url 'logout' %}">Log Out</a>
-                        <a class="btn " href="{% url 'post-create' %}">Create new post</a>
-                        <a class="btn " href="{% url 'category-create' %}">New category</a>
+                        <a class="btn " href="{% url 'post-create' %}">create new post</a>
+                        <a class="btn " href="{% url 'post-create' %}">New category</a>
                     </div>
                 </li>
             {% else %}
