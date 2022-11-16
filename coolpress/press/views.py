@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView, ListView
-from rest_framework import viewsets, permissions, mixins
+from rest_framework import viewsets, permissions, mixins, filters
 from rest_framework.viewsets import GenericViewSet
 
 from press.forms import PostForm, CommentForm, CategoryForm
@@ -214,6 +214,8 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().filter(status=PostStatus.PUBLISHED) \
         .order_by('-creation_date')
     serializer_class = PostSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['category__id']
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly]
 

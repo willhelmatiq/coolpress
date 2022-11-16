@@ -26,8 +26,7 @@ urlpatterns = [
          name='post-list-filtered-by-author'),
     path('api-category/<slug:slug>', views.category_api, name='category-api'),
 
-    path('api-categories/', views.categories_api, name='categories-api'),
-
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/', include(router.urls)),
+    path('api-categories/', views.categories_api, name='categories-api'),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
