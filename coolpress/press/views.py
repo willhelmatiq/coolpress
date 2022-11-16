@@ -11,7 +11,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from press.forms import PostForm, CommentForm, CategoryForm
 from press.models import Category, Post, CoolUser, Comment, PostStatus
-from press.serializers import AuthorSerializer
+from press.serializers import AuthorSerializer, CategorySerializer, PostSerializer
 
 
 def home(request):
