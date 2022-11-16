@@ -146,6 +146,13 @@ class PostClassFilteringListView(PostClassBasedListView):
         category = get_object_or_404(Category, slug=self.kwargs['category_slug'])
         return queryset.filter(category=category)
 
+class PostClassFilteringByAuthorListView(PostClassBasedListView):
+
+    def get_queryset(self):
+        queryset = super(PostClassFilteringByAuthorListView, self).get_queryset()
+        author = get_object_or_404(CoolUser, id=self.kwargs['post_author_id'])
+        return queryset.filter(author=author)
+
 
 def category_api(request, slug):
     cat = get_object_or_404(Category, slug=slug)
