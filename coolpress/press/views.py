@@ -164,8 +164,7 @@ def category_api(request, slug):
 def categories_api(request):
     cats = {}
     for cat in Category.objects.all():
-        cats[cat.id] = dict(slug=cat.slug, label=cat.label)
-
+        cats[cat.id] = dict(slug=cat.slug, label=cat.label, created_by=cat.created_by)
     return JsonResponse(
         cats
     )
