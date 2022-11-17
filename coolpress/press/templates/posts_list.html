@@ -18,7 +18,7 @@
                 <h5 class="card-title">{{post.title}}</h5>
                 <p class="card-text">{{post.body|urlize}}</p>
                 <p class="card-text"><small class="text-muted">{{post.last_update}}</small></p>
-                <p class="card-text"><a href="{% url 'post-list-filtered-by-author' post.author.id %}"><small
+                <p class="card-text"><a href="{% url 'post-list-filtered-by-author' post.author.user.username %}"><small
                         class="text-muted">{{post.author}}</small></a></p>
             </div>
             <div class="card-footer bg-transparent border-success">

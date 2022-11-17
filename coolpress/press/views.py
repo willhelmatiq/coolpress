@@ -150,7 +150,7 @@ class PostClassFilteringByAuthorListView(PostClassBasedListView):
 
     def get_queryset(self):
         queryset = super(PostClassFilteringByAuthorListView, self).get_queryset()
-        author = get_object_or_404(CoolUser, id=self.kwargs['post_author_id'])
+        author = get_object_or_404(CoolUser, user__username=self.kwargs['post_author_user_username'])
         return queryset.filter(author=author)
 
 

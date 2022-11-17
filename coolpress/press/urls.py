@@ -22,7 +22,7 @@ urlpatterns = [
     path('posts/', views.PostClassBasedListView.as_view(), name='post-list'),
     path('posts/<slug:category_slug>', views.PostClassFilteringListView.as_view(),
          name='post-list-filtered-by-category'),
-    path('posts/author/<int:post_author_id>', views.PostClassFilteringByAuthorListView.as_view(),
+    path('posts/author/<str:post_author_user_username>', views.PostClassFilteringByAuthorListView.as_view(),
          name='post-list-filtered-by-author'),
     path('api-category/<slug:slug>', views.category_api, name='category-api'),
 
