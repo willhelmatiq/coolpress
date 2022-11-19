@@ -214,10 +214,16 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().filter(status=PostStatus.PUBLISHED) \
         .order_by('-creation_date')
     serializer_class = PostSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['category__id']
+    # filter_backends = [filters.SearchFilter]
+    # search_fields = ['category__id']
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        category_id = self.request.query_params.get("category_id", None)
+        if category_id is not None:
+            return super().get_queryset().filter(category__id=category_id)
+        return super().get_queryset()
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user.cooluser)
