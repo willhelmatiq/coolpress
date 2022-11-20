@@ -27,6 +27,8 @@ urlpatterns = [
     path('api-category/<slug:slug>', views.category_api, name='category-api'),
 
     path('api/', include(router.urls)),
+    # path('api/authors/', views.AuthorsViewSet),
+    # path('api/authors/<slug:slug>',views.AuthorsViewSet),
     path('api-categories/', views.categories_api, name='categories-api'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
