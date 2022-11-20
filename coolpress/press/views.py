@@ -248,9 +248,10 @@ class AuthorsViewSet(viewsets.ModelViewSet):#viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         if self.kwargs.__len__() > 0:
-            if type(int(self.kwargs['pk'])) is int:
+            str = self.kwargs['pk']
+            if str.isdigit():
                 return self.queryset
-            elif type(self.kwargs['pk']) is str:
+            else:
                 slug = self.kwargs['pk']
                 category = get_object_or_404(Category, slug=slug)
                 return self.queryset.filter(post__category=category)
