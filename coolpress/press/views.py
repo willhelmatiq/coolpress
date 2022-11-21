@@ -6,8 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView, ListView
-from rest_framework import viewsets, permissions, mixins, filters, generics
-from rest_framework.decorators import action
+from rest_framework import viewsets, permissions, mixins
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -54,7 +53,7 @@ def post_detail(request, post_id):
     data = request.POST or {'votes': 10}
     form = CommentForm(data)
 
-    comments = post.comment_set.order_by('-creation_date')
+    comments = post.comment_set.order_by('-creation_date').filter(status='PUBLISHED')
     return render(request, 'posts_detail.html', {'post_obj': post, 'comment_form': form, 'comments': comments})
 
 
@@ -237,14 +236,6 @@ class AuthorsViewSet(viewsets.ModelViewSet):#viewsets.ReadOnlyModelViewSet):
     queryset = CoolUser.objects.alias(posts=Count('post')).filter(posts__gte=1)
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
-    # lookup_url_kwarg = None
-    # lookup_field = 'slug'
-
-    # def get_queryset(self):
-
-        # if (slug := self.kwargs.get("slug", None)) is not None:
-        #     return CoolUser.objects.alias(posts=Count('post')).filter(posts__gte=1).filter(post__category__slug=slug)
-        # return super().get_queryset()
 
     def get_queryset(self):
         if self.kwargs.__len__() > 0:
@@ -253,62 +244,13 @@ class AuthorsViewSet(viewsets.ModelViewSet):#viewsets.ReadOnlyModelViewSet):
                 return self.queryset
             else:
                 slug = self.kwargs['pk']
-                category = get_object_or_404(Category, slug=slug)
+                category = Category.objects.get(slug=slug)
                 return self.queryset.filter(post__category=category)
         return self.queryset
 
-    # queryset = Author.objects.all()
-
-    # def get_queryset(self):
-    #     if (name := self.kwargs.get("name", None)) is not None:
-    #         return Author.objects.filter(user__name__icontains=name)
-    #
-    #     return super().get_queryset()
-
-class AuthorsByCategoryViewSet(viewsets.ModelViewSet):
-    queryset = CoolUser.objects.alias(posts=Count('post')).filter(posts__gte=1)
-    serializer_class = AuthorSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        slug = self.kwargs
-        print(self.kwargs)
-        if slug:
-            category = get_object_or_404(Category, slug=slug)
-            return super().get_queryset().filter(post__category='category_id')
-        return super().get_queryset()
-
-    # def retrieve(self, request, *args, **kwargs):
-    #     category = get_object_or_404(Category, kwargs['slug'])
-    #     queryset = CoolUser.objects.alias(posts=Count('post')).filter(posts__gte=1).filter(post__category=category)
-    #     serializer = AuthorSerializer(queryset, many=True)
-    #     return Response(serializer.data)
-
-    # def __init__(self, request, *args, **kwargs):
-    #     queryset = super(AuthorsByCategoryViewSet, self).get_queryset()
-    #     authorsByCategorySlug = queryset.filter(post__category__slug=self.kwargs['slug'])
-    #     serializer_class = AuthorSerializer
-    #     permission_classes = [permissions.IsAuthenticated]
-    # queryset = CoolUser.objects.alias(posts=Count('post')).filter(posts__gte=1).filter(slug=self.kwargs['slug'])
-    # serializer_class = AuthorSerializer
-    # permission_classes = [permissions.IsAuthenticated]
-    # def get_queryset(self):
-    #     queryset = super(AuthorsByCategoryViewSet, self).get_queryset()
-    #     # category = get_object_or_404(Category, slug=self.kwargs['slug'])
-    #     return queryset.filter(post__category__slug=self.kwargs['slug'])
-    # @action(detail=True, methods=['GET'])
-    # def filter_authors(self, request, **kwargs):
-    #     queryset = self.get_queryset().filter(post__category__slug=self.kwargs['post_author_user_username'])
+    def retrieve(self, request, *args, **kwargs):
+        queryset = self.queryset
+        serializer_class = AuthorSerializer(queryset, many=True)
+        return Response(serializer_class.data)
 
 
-#
-# class AuthorsViewSetBySlug(AuthorsViewSet):
-#     """
-#     API endpoint that allows users to be viewed or edited.
-#     """
-#
-#     def get_queryset(self):
-#         return super().get_queryset().filter(category__slug=self.kwargs['category_slug'])
-#     # queryset = CoolUser.objects.alias(posts=Count('post')).filter(posts__gte=1)
-#     serializer_class = AuthorSerializer
-#     permission_classes = [permissions.IsAuthenticated]
