@@ -1,6 +1,6 @@
 import os
 
-from coolpress.coolpress.settings import *
+from coolpress.settings import *
 
 DEBUG = False
 ALLOWED_HOSTS = ['*']
