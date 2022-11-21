@@ -20,6 +20,7 @@ urlpatterns = [
     path('about/', views.AboutView.as_view(), name='about'),
     path('categories/', views.CategoryListView.as_view(), name='category-list'),
     path('posts/', views.PostClassBasedListView.as_view(), name='post-list'),
+    path('posts/trending', views.TrendingPostClassBasedListView.as_view(), name='posts-list-trending'),
     path('posts/<slug:category_slug>', views.PostClassFilteringListView.as_view(),
          name='post-list-filtered-by-category'),
     path('posts/author/<str:post_author_user_username>', views.PostClassFilteringByAuthorListView.as_view(),

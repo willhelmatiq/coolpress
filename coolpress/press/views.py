@@ -1,7 +1,7 @@
 import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, Q, Min, Max
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -135,6 +135,15 @@ class CategoryListView(ListView):
 class PostClassBasedListView(ListView):
     paginate_by = 20
     queryset = Post.objects.filter(status=PostStatus.PUBLISHED).order_by('-last_update')
+    context_object_name = 'posts_list'
+    template_name = 'posts_list.html'
+
+
+class TrendingPostClassBasedListView(ListView):
+    paginate_by = 20
+    queryset = Post.objects.filter(comment__status='PUBLISHED').annotate(num_comment=Count('comment')) \
+        .annotate(latest_com=Max('comment__last_update')).filter(num_comment__gte=5) \
+        .filter(status=PostStatus.PUBLISHED).order_by('-latest_com')
     context_object_name = 'posts_list'
     template_name = 'posts_list.html'
 
