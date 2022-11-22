@@ -5,7 +5,7 @@ from django.db.models import Count, Q, Min, Max
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView
 from rest_framework import viewsets, permissions, mixins
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -55,6 +55,9 @@ def post_detail(request, post_id):
 
     comments = post.comment_set.order_by('-creation_date').filter(status='PUBLISHED')
     return render(request, 'posts_detail.html', {'post_obj': post, 'comment_form': form, 'comments': comments})
+
+class DetailCoolUser(DetailView):
+    model = CoolUser
 
 
 @login_required

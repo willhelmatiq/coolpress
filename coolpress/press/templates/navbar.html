@@ -31,8 +31,8 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navUser" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ user.username }}
-                        {% if cooluser.gravatar_link %}
-                            <img class="gravatar-navbar-icon" src="{{ cooluser.gravatar_link }}"
+                        {% if user.cooluser.gravatar_link %}
+                            <img class="gravatar-navbar-icon" src="{{ user.cooluser.gravatar_link }}"
                                  alt="">
                         {% endif %}
                     </a>

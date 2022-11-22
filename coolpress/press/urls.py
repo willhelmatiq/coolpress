@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework import routers
 
 from press import views
+from press.views import  DetailCoolUser
 
 router = routers.DefaultRouter()
 router.register(r'categories', views.CategoryViewSet)
@@ -25,6 +26,7 @@ urlpatterns = [
          name='post-list-filtered-by-category'),
     path('posts/author/<str:post_author_user_username>', views.PostClassFilteringByAuthorListView.as_view(),
          name='post-list-filtered-by-author'),
+    path('author/<int:pk>/', DetailCoolUser.as_view(), name='author-detail'),
     path('api-category/<slug:slug>', views.category_api, name='category-api'),
 
     path('api/', include(router.urls)),

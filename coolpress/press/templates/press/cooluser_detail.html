@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="text-center" xmlns:text-align="http://www.w3.org/1999/xhtml">
+
+    <h2>Username: {{object.user.username}}</h2>
+    <div class="row" >
+        <div class="{% if object.gravatar_link%}col-8{%else%}col-12{%endif%}" text-align:left>
+            <p><strong>First name:</strong> {{object.user.first_name}}</p>
+            <p><strong>Last name:</strong> {{object.user.last_name}}</p>
+            <p><strong>Email:</strong> {{object.user.email}}</p>
+            <p><strong>Gravatar Update Date:</strong> {{object.gravatar_updated_at}}</p>
+        </div>
+
+        {% if object.gravatar_link %}
+        <div class="col-4">
+            <img src="{{object.gravatar_link}}" alt=""/>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,12 +1,28 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
+
+from press.user_info_manager import get_gravatar_image
 
 
 class CoolUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    gravatar_link = models.URLField(null=True, blank=True)
+    gravatar_link = models.URLField(null=True, blank=True, editable=False)
+    gravatar_updated_at = models.DateTimeField()
     github_profile = models.URLField(null=True, blank=True)
     gh_repositories = models.IntegerField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(CoolUser, self).save(*args, **kwargs)
+
+        email = self.user.email
+        if  email:
+            old_image_link = self.gravatar_link
+            new_image_link = get_gravatar_image(email)
+            if (new_image_link != old_image_link):
+                self.gravatar_updated_at = timezone.now()
+            self.gravatar_link = new_image_link
+            super(CoolUser, self).save()
 
     def __str__(self):
         return f'{self.user.username}'
