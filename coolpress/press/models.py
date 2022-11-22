@@ -8,11 +8,11 @@ from press.user_info_manager import get_gravatar_image, get_github_repositories,
 class CoolUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gravatar_link = models.URLField(null=True, blank=True, editable=False)
-    gravatar_updated_at = models.DateTimeField()
+    gravatar_updated_at = models.DateTimeField(null=True)
     github_profile = models.CharField(max_length=150, null=True, blank=True)
     gh_repositories = models.IntegerField(null=True, blank=True, editable=False)
     gh_stars = models.IntegerField(null=True, blank=True, editable=False)
-    last_github_check = models.DateTimeField()
+    last_github_check = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
         super(CoolUser, self).save(*args, **kwargs)
