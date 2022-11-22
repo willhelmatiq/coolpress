@@ -22,7 +22,12 @@ class TrendingPostPagesTest(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_post_detail(self):
+    def test_post_before_comment(self):
+        response = self.client.get(reverse('posts-list-trending'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['posts_list']), 0)
+
+    def test_post_after_comment(self):
         post = self.post
         comment_titles = ['test', 'test comment', 'one more', 'another one', 'and another one']
         for comment_title in comment_titles:
