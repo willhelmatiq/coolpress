@@ -2,27 +2,38 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
-from press.user_info_manager import get_gravatar_image
+from press.user_info_manager import get_gravatar_image, get_github_repositories, get_github_stars
 
 
 class CoolUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gravatar_link = models.URLField(null=True, blank=True, editable=False)
     gravatar_updated_at = models.DateTimeField()
-    github_profile = models.URLField(null=True, blank=True)
-    gh_repositories = models.IntegerField(null=True, blank=True)
+    github_profile = models.CharField(max_length=150, null=True, blank=True)
+    gh_repositories = models.IntegerField(null=True, blank=True, editable=False)
+    gh_stars = models.IntegerField(null=True, blank=True, editable=False)
+    last_github_check = models.DateTimeField()
 
     def save(self, *args, **kwargs):
         super(CoolUser, self).save(*args, **kwargs)
 
         email = self.user.email
-        if  email:
+        if email:
             old_image_link = self.gravatar_link
             new_image_link = get_gravatar_image(email)
             if (new_image_link != old_image_link):
                 self.gravatar_updated_at = timezone.now()
             self.gravatar_link = new_image_link
-            super(CoolUser, self).save()
+
+        if self.github_profile and (timezone.now() - self.last_github_check).total_seconds() /(60*60*24) >=1:
+            repositories = get_github_repositories(self.github_profile)
+            stars = get_github_stars(self.github_profile)
+            self.last_github_check = timezone.now()
+            self.gh_repositories = repositories
+            self.gh_stars = stars
+
+        super(CoolUser, self).save()
+
 
     def __str__(self):
         return f'{self.user.username}'

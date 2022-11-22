@@ -18,6 +18,15 @@
         </div>
         {% endif %}
     </div>
+     {% if object.github_profile %}
+    <div class="mt-5">
+        <h2>Github information</h2>
+        <p><strong>Github Username:</strong> {{object.github_profile}}</p>
+        <p><strong>Amount of repositories:</strong> {{object.gh_repositories|default:'0'}}
+        <p><strong>Amount of stars:</strong> {{object.gh_stars|default:'0'}}
+        </p>
+    </div>
+    {% endif %}
 
 </div>
 {% endblock %}

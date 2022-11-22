@@ -4,4 +4,4 @@ djangorestframework
 pyyml
 uritemplate
 libgravatar
-
+beautifulsoup4~=4.10.0
