@@ -5,14 +5,15 @@ from django.db.models import Count, Q, Min, Max
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import TemplateView, ListView, DetailView
-from rest_framework import viewsets, permissions, mixins
+from django.views.generic import TemplateView, ListView, DetailView, CreateView
+from rest_framework import viewsets, permissions, mixins, filters, generics
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from press.forms import PostForm, CommentForm, CategoryForm
 from press.models import Category, Post, CoolUser, Comment, PostStatus
 from press.serializers import AuthorSerializer, CategorySerializer, PostSerializer
+from press.stats_manager import posts_analyzer
 
 
 def home(request):
@@ -52,9 +53,11 @@ def post_detail(request, post_id):
     post = Post.objects.get(id=post_id)
     data = request.POST or {'votes': 10}
     form = CommentForm(data)
+    stats = posts_analyzer(Post.objects.filter(id=post.id)).top(10)
 
     comments = post.comment_set.order_by('-creation_date').filter(status='PUBLISHED')
-    return render(request, 'posts_detail.html', {'post_obj': post, 'comment_form': form, 'comments': comments})
+    return render(request, 'posts_detail.html',
+                  {'post_obj': post, 'comment_form': form, 'comments': comments, 'stats': stats})
 
 class DetailCoolUser(DetailView):
     model = CoolUser
@@ -227,8 +230,8 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().filter(status=PostStatus.PUBLISHED) \
         .order_by('-creation_date')
     serializer_class = PostSerializer
-    # filter_backends = [filters.SearchFilter]
-    # search_fields = ['category__id']
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['category__id']
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly]
 
@@ -265,4 +268,16 @@ class AuthorsViewSet(viewsets.ModelViewSet):#viewsets.ReadOnlyModelViewSet):
         serializer_class = AuthorSerializer(queryset, many=True)
         return Response(serializer_class.data)
 
+class CategoryAuthors(generics.ListAPIView):
+    serializer_class = AuthorSerializer
 
+    def get_queryset(self):
+        if self.kwargs.__len__() > 0:
+            cslug_or_id = self.kwargs['pk']
+            try:
+                author_id = int(cslug_or_id)
+                return self.queryset.filter(id=author_id)
+            except:
+                cat = Category.objects.get(slug=cslug_or_id)
+                return self.queryset.filter(post__category=cat)
+        return self.queryset

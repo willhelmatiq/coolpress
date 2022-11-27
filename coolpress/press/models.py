@@ -1,8 +1,9 @@
+from typing import Optional
+
+import requests
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils import timezone
-
-from press.user_info_manager import get_gravatar_image, get_github_repositories, get_github_stars
+from libgravatar import Gravatar
 
 
 class CoolUser(models.Model):
@@ -14,25 +15,47 @@ class CoolUser(models.Model):
     gh_stars = models.IntegerField(null=True, blank=True, editable=False)
     last_github_check = models.DateTimeField(null=True)
 
+    # def save(self, *args, **kwargs):
+    #     super(CoolUser, self).save(*args, **kwargs)
+    #
+    #     email = self.user.email
+    #     if email:
+    #         old_image_link = self.gravatar_link
+    #         new_image_link = get_gravatar_image(email)
+    #         if (new_image_link != old_image_link):
+    #             self.gravatar_updated_at = timezone.now()
+    #         self.gravatar_link = new_image_link
+    #
+    #     if self.github_profile and (timezone.now() - self.last_github_check).total_seconds() /(60*60*24) >=1:
+    #         repositories = get_github_repositories(self.github_profile)
+    #         stars = get_github_stars(self.github_profile)
+    #         self.last_github_check = timezone.now()
+    #         self.gh_repositories = repositories
+    #         self.gh_stars = stars
+    #
+    #     super(CoolUser, self).save()
     def save(self, *args, **kwargs):
+        if self.user.email is not None:
+            self.gravatar_link = Gravatar(self.user.email).get_image()
+        self.gh_repositories = self.get_github_repos()
         super(CoolUser, self).save(*args, **kwargs)
 
-        email = self.user.email
-        if email:
-            old_image_link = self.gravatar_link
-            new_image_link = get_gravatar_image(email)
-            if (new_image_link != old_image_link):
-                self.gravatar_updated_at = timezone.now()
-            self.gravatar_link = new_image_link
+    def get_github_url(self) -> Optional[str]:
+        if self.github_profile:
+            url = f'https://github.com/{self.github_profile}'
+            response = requests.get(url)
+            if response.status_code == 200:
+                return url
 
-        if self.github_profile and (timezone.now() - self.last_github_check).total_seconds() /(60*60*24) >=1:
-            repositories = get_github_repositories(self.github_profile)
-            stars = get_github_stars(self.github_profile)
-            self.last_github_check = timezone.now()
-            self.gh_repositories = repositories
-            self.gh_stars = stars
-
-        super(CoolUser, self).save()
+    def get_github_repos(self) -> Optional[int]:
+        url = self.get_github_url()
+        if url:
+            response = requests.get(url)
+            soup = BeautifulSoup(response.content, 'html.parser')
+            css_selector = '.Counter'
+            repositories_info = soup.select_one(css_selector)
+            repos_text = repositories_info.text
+            return int(repos_text)
 
 
     def __str__(self):

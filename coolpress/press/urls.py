@@ -32,6 +32,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     # path('api/authors/', views.AuthorsViewSet),
     # path('api/authors/<slug:slug>',views.AuthorsViewSet),
+    path('api/authors-by-category/<slug:cat_slug>/', views.CategoryAuthors.as_view()),
     path('api-categories/', views.categories_api, name='categories-api'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
