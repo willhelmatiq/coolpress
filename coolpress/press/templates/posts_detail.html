@@ -53,7 +53,9 @@
     </div>
 </form>
 {% if stats %}
+<div>
     <table class="table table-striped text-center">
+        <caption>Post stats</caption>
         <thead>
         <th>Word</th>
         <th>Cardinality</th>
@@ -67,6 +69,26 @@
         {% endfor %}
         </tbody>
     </table>
+</div>
+{% endif %}
+{% if stats %}
+<div>
+    <table class="table table-striped text-center">
+        <caption>Comments stats</caption>
+        <thead>
+        <th>Word</th>
+        <th>Cardinality</th>
+        </thead>
+        <tbody>
+        {% for word, count in stats_comments %}
+        <tr>
+            <td>{{word}}</td>
+            <td>{{count}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endif %}
 
 {% endblock %}
